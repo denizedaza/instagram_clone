@@ -42,6 +42,12 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<true/>
+	<key>NSPhotoLibraryUseageDescription</key>
+	<string>Photo Library Usage<string/>
+	<key>NSCameraUseageDescription</key>
+	<string>Camera Usage<string/>
+	<key>NSMicrophoneUseageDescription</key>
+	<string>Microphone Usage<string/>
 </dict>
 </plist>
