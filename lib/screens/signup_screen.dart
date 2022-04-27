@@ -21,6 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -32,10 +33,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void selectImage() async {
-    Uint8List image = await pickImage(ImageSource.gallery);
+    Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
-      _image = image;
+      _image = img;
     });
+  }
+
+  void signupUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    // ignore: prefer_if_null_operators
+    String res = await AuthMethods().signupUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+        username: _usernameController.text,
+        bio: _bioController.text,
+        file: _image!);
+
+    setState(() {
+      _isLoading = false;
+    });
+    if (res != 'success') {
+      showSnackbar(res, context);
+    }
   }
 
   @override
@@ -46,10 +67,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 32),
         width: double.infinity,
         child: Column(
-          crossAxisAlignment: (CrossAxisAlignment.center),
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // image
-            Flexible(child: Container(), flex: 9),
+            Flexible(child: Container(), flex: 2),
             SvgPicture.asset(
               'assets/ic_instagram.svg',
               color: primaryColor,
@@ -74,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   bottom: -10,
                   left: 80,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: selectImage,
                     icon: const Icon(
                       Icons.add_a_photo,
                     ),
@@ -113,15 +134,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 16),
             //button for login
             InkWell(
-              onTap: () async {
-                String res = await AuthMethods().signupUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
-                    bio: _bioController.text);
-              },
+              onTap: signupUser,
               child: Container(
-                child: const Text('Log in'),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(color: primaryColor),
+                      )
+                    : const Text('Sign up'),
                 width: double.infinity,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -133,6 +152,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     color: blueColor),
               ),
+              // onTap: signupUser,
             ),
             const SizedBox(height: 12),
             Flexible(child: Container(), flex: 2),
